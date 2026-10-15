@@ -957,11 +957,26 @@ public partial class MainWindow : Window
         // Drag disabled when registered as AppBar (fixed position)
     }
 
+    private SettingsWindow? _settingsWindow;
+
     private void Settings_Click(object sender, RoutedEventArgs e)
     {
-        var settingsWindow = new SettingsWindow(ViewModel);
-        settingsWindow.Owner = this;
-        settingsWindow.ShowDialog();
+        // Never stack a second settings dialog on top of an open one.
+        if (_settingsWindow is not null)
+        {
+            _settingsWindow.Activate();
+            return;
+        }
+
+        _settingsWindow = new SettingsWindow(ViewModel) { Owner = this };
+        try
+        {
+            _settingsWindow.ShowDialog();
+        }
+        finally
+        {
+            _settingsWindow = null;
+        }
     }
 
     /// <summary>
