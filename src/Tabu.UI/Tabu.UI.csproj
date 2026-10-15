@@ -11,9 +11,10 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <ApplicationIcon>Assets\tabu.ico</ApplicationIcon>
-    <AssemblyVersion>1.9.3.0</AssemblyVersion>
-    <FileVersion>1.9.3.0</FileVersion>
-    <Version>1.9.3</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyVersion>1.9.4.0</AssemblyVersion>
+    <FileVersion>1.9.4.0</FileVersion>
+    <Version>1.9.4</Version>
   </PropertyGroup>
   <ItemGroup>
     <Resource Include="Assets\tabu.ico" />
