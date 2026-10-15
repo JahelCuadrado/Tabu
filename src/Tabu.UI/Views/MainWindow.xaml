@@ -208,16 +208,22 @@
                        Margin="8,0,12,0"
                        Visibility="{Binding ShowClock, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-            <!-- Settings button -->
+            <!-- Settings button. Focusable="False" so keyboard focus never
+                 parks on it: otherwise, after the bar is activated (e.g. by
+                 clicking a tab), a stray Space/Enter keystroke "clicks" it
+                 and the settings window opens on its own. -->
             <Button x:Name="SettingsButton" Grid.Column="3"
                     Click="Settings_Click"
+                    Focusable="False" IsTabStop="False"
                     ToolTip="{DynamicResource MainBar_SettingsTooltip}"
                     Style="{DynamicResource TitleBarButtonStyle}"
                     Content="&#xE713;"
                     Width="{Binding BarHeight}" Height="{Binding BarHeight}" />
 
-            <!-- Close button -->
+            <!-- Close button (non-focusable for the same reason as Settings:
+                 a stray Enter/Space must never quit the app). -->
             <Button x:Name="CloseButton" Grid.Column="4"
+                    Focusable="False" IsTabStop="False"
                     Style="{DynamicResource CloseWindowButtonStyle}"
                     Content="&#xE8BB;" Click="Close_Click"
                     ToolTip="{DynamicResource MainBar_CloseTooltip}"
