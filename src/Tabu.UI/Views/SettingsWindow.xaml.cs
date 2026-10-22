@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Tabu.UI.Services;
@@ -6,8 +7,24 @@ using Tabu.UI.ViewModels;
 
 namespace Tabu.UI.Views;
 
-public partial class SettingsWindow : Window
+public partial class SettingsWindow : Wpf.Ui.Controls.FluentWindow
 {
+    // Combo item order in SettingsWindow.xaml. The enum values are pixel
+    // sizes, so they cannot double as combo indices.
+    private static readonly Tabu.Domain.Entities.BarSize[] BarSizeOptions =
+    {
+        Tabu.Domain.Entities.BarSize.Small,
+        Tabu.Domain.Entities.BarSize.Medium,
+        Tabu.Domain.Entities.BarSize.Large,
+    };
+
+    private static readonly Tabu.Domain.Entities.ClockSize[] ClockSizeOptions =
+    {
+        Tabu.Domain.Entities.ClockSize.Small,
+        Tabu.Domain.Entities.ClockSize.Medium,
+        Tabu.Domain.Entities.ClockSize.Large,
+    };
+
     private readonly MainViewModel _viewModel;
     private bool _initialized;
 
@@ -17,58 +34,29 @@ public partial class SettingsWindow : Window
         InitializeComponent();
         Loaded += OnLoaded;
 
-        // Sync radio buttons with current state
-        if (_viewModel.IsBarOnAllMonitors)
-        {
-            AllBarsRadio.IsChecked = true;
-        }
-        else
-        {
-            PrimaryBarRadio.IsChecked = true;
-        }
+        // Fit small or high-scale displays: WorkArea already excludes the
+        // space reserved by the bar itself.
+        var workArea = SystemParameters.WorkArea;
+        Width = Math.Min(Width, workArea.Width - 48);
+        Height = Math.Min(Height, workArea.Height - 48);
 
-        if (_viewModel.IsDetectSameScreenOnly)
-        {
-            DetectSameScreenRadio.IsChecked = true;
-        }
-        else
-        {
-            DetectAllRadio.IsChecked = true;
-        }
+        // Sync controls with current state. Combo indices follow the item
+        // order declared in SettingsWindow.xaml.
+        BarPlacementCombo.SelectedIndex = _viewModel.IsBarOnAllMonitors ? 1 : 0;
+        DetectionModeCombo.SelectedIndex = _viewModel.IsDetectSameScreenOnly ? 1 : 0;
 
-        switch (_viewModel.AppTheme)
+        ThemeCombo.SelectedIndex = _viewModel.AppTheme switch
         {
-            case AppTheme.Dark:
-                ThemeDarkRadio.IsChecked = true;
-                break;
-            case AppTheme.Light:
-                ThemeLightRadio.IsChecked = true;
-                break;
-            default:
-                ThemeSystemRadio.IsChecked = true;
-                break;
-        }
+            AppTheme.Dark => 1,
+            AppTheme.Light => 2,
+            _ => 0,
+        };
 
         OpacitySlider.Value = _viewModel.BarOpacity * 100;
         OpacityValueText.Text = $"{(int)(_viewModel.BarOpacity * 100)}%";
 
-        if (_viewModel.UseFixedTabWidth)
-        {
-            TabFixedWidthRadio.IsChecked = true;
-        }
-        else
-        {
-            TabFullWidthRadio.IsChecked = true;
-        }
-
-        if (_viewModel.ShowBranding)
-        {
-            BrandingVisibleRadio.IsChecked = true;
-        }
-        else
-        {
-            BrandingHiddenRadio.IsChecked = true;
-        }
+        TabWidthCombo.SelectedIndex = _viewModel.UseFixedTabWidth ? 1 : 0;
+        BrandingToggle.IsChecked = _viewModel.ShowBranding;
 
         // Language combo
         LanguageCombo.ItemsSource = LocalizationManager.AvailableLanguages;
@@ -84,55 +72,13 @@ public partial class SettingsWindow : Window
         AccentColorBox.Text = canonicalAccent;
         SyncAccentWheelFromHex(canonicalAccent);
 
-        if (_viewModel.AutoHideBar)
-        {
-            BarAutoHideRadio.IsChecked = true;
-        }
-        else
-        {
-            BarAlwaysVisibleRadio.IsChecked = true;
-        }
-
-        if (_viewModel.LaunchAtStartup)
-        {
-            StartupEnabledRadio.IsChecked = true;
-        }
-        else
-        {
-            StartupDisabledRadio.IsChecked = true;
-        }
-
-        if (_viewModel.ShowClock)
-        {
-            ClockVisibleRadio.IsChecked = true;
-        }
-        else
-        {
-            ClockHiddenRadio.IsChecked = true;
-        }
-
-        switch (_viewModel.ClockSize)
-        {
-            case Tabu.Domain.Entities.ClockSize.Medium:
-                ClockSizeMediumRadio.IsChecked = true;
-                break;
-            case Tabu.Domain.Entities.ClockSize.Large:
-                ClockSizeLargeRadio.IsChecked = true;
-                break;
-            default:
-                ClockSizeSmallRadio.IsChecked = true;
-                break;
-        }
+        BarVisibilityCombo.SelectedIndex = _viewModel.AutoHideBar ? 1 : 0;
+        StartupToggle.IsChecked = _viewModel.LaunchAtStartup;
+        ClockToggle.IsChecked = _viewModel.ShowClock;
+        ClockSizeCombo.SelectedIndex = Array.IndexOf(ClockSizeOptions, _viewModel.ClockSize);
         UpdateClockSizeAvailability();
 
-        if (_viewModel.ShowNotificationBadges)
-        {
-            NotificationsEnabledRadio.IsChecked = true;
-        }
-        else
-        {
-            NotificationsDisabledRadio.IsChecked = true;
-        }
+        NotificationsToggle.IsChecked = _viewModel.ShowNotificationBadges;
 
         NotificationDotSizeSlider.Value = _viewModel.NotificationDotSize;
         NotificationDotSizeValueText.Text = $"{(int)_viewModel.NotificationDotSize} px";
@@ -147,38 +93,14 @@ public partial class SettingsWindow : Window
         ActiveTabOpacityValueText.Text = $"{(int)_viewModel.ActiveTabOpacity}%";
         SyncActiveTabWheelFromHex(_viewModel.ActiveTabColor);
 
-        switch (_viewModel.BarSize)
-        {
-            case Tabu.Domain.Entities.BarSize.Medium:
-                BarSizeMediumRadio.IsChecked = true;
-                break;
-            case Tabu.Domain.Entities.BarSize.Large:
-                BarSizeLargeRadio.IsChecked = true;
-                break;
-            default:
-                BarSizeSmallRadio.IsChecked = true;
-                break;
-        }
-
-        if (_viewModel.UseBlurEffect)
-        {
-            BlurEnabledRadio.IsChecked = true;
-        }
-        else
-        {
-            BlurDisabledRadio.IsChecked = true;
-        }
-
+        BarSizeCombo.SelectedIndex = Array.IndexOf(BarSizeOptions, _viewModel.BarSize);
+        BlurToggle.IsChecked = _viewModel.UseBlurEffect;
         UpdateThemeLockState();
+        AutoUpdatesToggle.IsChecked = _viewModel.AutoCheckUpdates;
 
-        if (_viewModel.AutoCheckUpdates)
-        {
-            AutoUpdatesEnabledRadio.IsChecked = true;
-        }
-        else
-        {
-            AutoUpdatesDisabledRadio.IsChecked = true;
-        }
+        ApplyFluentTheme();
+        _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+        Closed += (_, _) => _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
 
         _initialized = true;
     }
@@ -187,7 +109,7 @@ public partial class SettingsWindow : Window
     {
         if (!_initialized) return;
 
-        bool allMonitors = AllBarsRadio.IsChecked == true;
+        bool allMonitors = BarPlacementCombo.SelectedIndex == 1;
 
         if (allMonitors != _viewModel.IsBarOnAllMonitors)
         {
@@ -199,7 +121,7 @@ public partial class SettingsWindow : Window
     {
         if (!_initialized) return;
 
-        bool sameScreen = DetectSameScreenRadio.IsChecked == true;
+        bool sameScreen = DetectionModeCombo.SelectedIndex == 1;
 
         if (sameScreen != _viewModel.IsDetectSameScreenOnly)
         {
@@ -211,23 +133,17 @@ public partial class SettingsWindow : Window
     {
         if (!_initialized) return;
 
-        AppTheme theme;
-        if (ThemeDarkRadio.IsChecked == true)
-            theme = AppTheme.Dark;
-        else if (ThemeLightRadio.IsChecked == true)
-            theme = AppTheme.Light;
-        else
-            theme = AppTheme.System;
+        AppTheme theme = ThemeCombo.SelectedIndex switch
+        {
+            1 => AppTheme.Dark,
+            2 => AppTheme.Light,
+            _ => AppTheme.System,
+        };
 
         if (theme != _viewModel.AppTheme)
         {
             _viewModel.AppTheme = theme;
         }
-    }
-
-    private void Close_Click(object sender, RoutedEventArgs e)
-    {
-        Close();
     }
 
     private void Opacity_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -243,7 +159,7 @@ public partial class SettingsWindow : Window
     {
         if (!_initialized) return;
 
-        bool fixedWidth = TabFixedWidthRadio.IsChecked == true;
+        bool fixedWidth = TabWidthCombo.SelectedIndex == 1;
 
         if (fixedWidth != _viewModel.UseFixedTabWidth)
         {
@@ -255,7 +171,7 @@ public partial class SettingsWindow : Window
     {
         if (!_initialized) return;
 
-        bool show = BrandingVisibleRadio.IsChecked == true;
+        bool show = BrandingToggle.IsChecked == true;
 
         if (show != _viewModel.ShowBranding)
         {
@@ -343,7 +259,7 @@ public partial class SettingsWindow : Window
     {
         if (!_initialized) return;
 
-        bool autoHide = BarAutoHideRadio.IsChecked == true;
+        bool autoHide = BarVisibilityCombo.SelectedIndex == 1;
 
         if (autoHide != _viewModel.AutoHideBar)
         {
@@ -355,7 +271,7 @@ public partial class SettingsWindow : Window
     {
         if (!_initialized) return;
 
-        bool enabled = StartupEnabledRadio.IsChecked == true;
+        bool enabled = StartupToggle.IsChecked == true;
 
         if (enabled != _viewModel.LaunchAtStartup)
         {
@@ -367,7 +283,7 @@ public partial class SettingsWindow : Window
     {
         if (!_initialized) return;
 
-        bool show = ClockVisibleRadio.IsChecked == true;
+        bool show = ClockToggle.IsChecked == true;
 
         if (show != _viewModel.ShowClock)
         {
@@ -380,13 +296,8 @@ public partial class SettingsWindow : Window
     {
         if (!_initialized) return;
 
-        Tabu.Domain.Entities.ClockSize size;
-        if (ClockSizeMediumRadio.IsChecked == true)
-            size = Tabu.Domain.Entities.ClockSize.Medium;
-        else if (ClockSizeLargeRadio.IsChecked == true)
-            size = Tabu.Domain.Entities.ClockSize.Large;
-        else
-            size = Tabu.Domain.Entities.ClockSize.Small;
+        if (ClockSizeCombo.SelectedIndex < 0) return;
+        var size = ClockSizeOptions[ClockSizeCombo.SelectedIndex];
 
         if (size != _viewModel.ClockSize)
         {
@@ -408,7 +319,7 @@ public partial class SettingsWindow : Window
     {
         if (!_initialized) return;
 
-        bool show = NotificationsEnabledRadio.IsChecked == true;
+        bool show = NotificationsToggle.IsChecked == true;
         if (show != _viewModel.ShowNotificationBadges)
         {
             _viewModel.ShowNotificationBadges = show;
@@ -637,13 +548,8 @@ public partial class SettingsWindow : Window
     {
         if (!_initialized) return;
 
-        Tabu.Domain.Entities.BarSize size;
-        if (BarSizeMediumRadio.IsChecked == true)
-            size = Tabu.Domain.Entities.BarSize.Medium;
-        else if (BarSizeLargeRadio.IsChecked == true)
-            size = Tabu.Domain.Entities.BarSize.Large;
-        else
-            size = Tabu.Domain.Entities.BarSize.Small;
+        if (BarSizeCombo.SelectedIndex < 0) return;
+        var size = BarSizeOptions[BarSizeCombo.SelectedIndex];
 
         if (size != _viewModel.BarSize)
         {
@@ -655,18 +561,18 @@ public partial class SettingsWindow : Window
     {
         if (!_initialized) return;
 
-        bool enabled = BlurEnabledRadio.IsChecked == true;
+        bool enabled = BlurToggle.IsChecked == true;
         if (enabled != _viewModel.UseBlurEffect)
         {
             _viewModel.UseBlurEffect = enabled;
         }
 
         // App.xaml.cs forces the theme to Dark when blur turns on; mirror
-        // that change in the settings UI and grey out the radios so the
-        // user cannot pick an incompatible combination.
+        // that change in the settings UI and grey out the theme combo so
+        // the user cannot pick an incompatible combination.
         if (enabled)
         {
-            ThemeDarkRadio.IsChecked = true;
+            ThemeCombo.SelectedIndex = 1;
         }
         UpdateThemeLockState();
     }
@@ -754,7 +660,7 @@ public partial class SettingsWindow : Window
     {
         if (!_initialized) return;
 
-        bool enabled = AutoUpdatesEnabledRadio.IsChecked == true;
+        bool enabled = AutoUpdatesToggle.IsChecked == true;
         if (enabled != _viewModel.AutoCheckUpdates)
         {
             _viewModel.AutoCheckUpdates = enabled;
@@ -775,7 +681,7 @@ public partial class SettingsWindow : Window
     /// <summary>
     /// Restores every Tabu setting to its factory default. Mirrors
     /// the values declared in <see cref="Tabu.Domain.Entities.UserSettings"/>.
-    /// Each radio/slider/combo assignment fires its existing
+    /// Each toggle/slider/combo assignment fires its existing
     /// <c>*_Changed</c> handler, so the MainViewModel is updated and
     /// persisted exactly as if the user had toggled each control by hand.
     /// </summary>
@@ -802,25 +708,25 @@ public partial class SettingsWindow : Window
         }
 
         // Bar layout
-        AllBarsRadio.IsChecked = true;
-        DetectSameScreenRadio.IsChecked = true;
-        BarSizeSmallRadio.IsChecked = true;
-        BarAlwaysVisibleRadio.IsChecked = true;
+        BarPlacementCombo.SelectedIndex = 1;
+        DetectionModeCombo.SelectedIndex = 1;
+        BarSizeCombo.SelectedIndex = 0;
+        BarVisibilityCombo.SelectedIndex = 0;
 
         // Appearance
-        BlurDisabledRadio.IsChecked = true;
-        ThemeSystemRadio.IsChecked = true;
+        BlurToggle.IsChecked = false;
+        ThemeCombo.SelectedIndex = 0;
         OpacitySlider.Value = 100;
         AccentColorBox.Text = AccentColorManager.DefaultAccentCode;
         SyncAccentWheelFromHex(AccentColorManager.DefaultAccentCode);
-        BrandingVisibleRadio.IsChecked = true;
+        BrandingToggle.IsChecked = true;
 
         // Tabs
-        TabFixedWidthRadio.IsChecked = true;
-        ClockVisibleRadio.IsChecked = true;
-        ClockSizeSmallRadio.IsChecked = true;
+        TabWidthCombo.SelectedIndex = 1;
+        ClockToggle.IsChecked = true;
+        ClockSizeCombo.SelectedIndex = 0;
         UpdateClockSizeAvailability();
-        NotificationsEnabledRadio.IsChecked = true;
+        NotificationsToggle.IsChecked = true;
         NotificationDotSizeSlider.Value = 7;
         NotificationDotColorBox.Text = string.Empty;
         SyncWheelFromHex(string.Empty);
@@ -835,28 +741,166 @@ public partial class SettingsWindow : Window
             .FirstOrDefault(l => l.Code == "en")
             ?? LocalizationManager.AvailableLanguages[0];
         LanguageCombo.SelectedItem = defaultLanguage;
-        StartupDisabledRadio.IsChecked = true;
-        AutoUpdatesEnabledRadio.IsChecked = true;
+        StartupToggle.IsChecked = false;
+        AutoUpdatesToggle.IsChecked = true;
 
         ShowToast(TryFindResource("Settings_ResetSuccess") as string ?? "Settings restored to defaults.");
     }
 
-    private void Header_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    // --- Fluent theme (WPF UI, scoped to this window) -------------------
+
+    private Wpf.Ui.Appearance.ApplicationTheme _fluentTheme = Wpf.Ui.Appearance.ApplicationTheme.Dark;
+
+    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+        if (e.PropertyName is nameof(MainViewModel.AppTheme)
+            or nameof(MainViewModel.UseBlurEffect)
+            or nameof(MainViewModel.AccentColor))
         {
-            DragMove();
+            ApplyFluentTheme();
         }
+    }
+
+    /// <summary>
+    /// Mirrors Tabu's effective theme and accent onto this window's WPF UI
+    /// resources. Blur forces dark, matching App.xaml.cs.
+    /// </summary>
+    private void ApplyFluentTheme()
+    {
+        bool dark = _viewModel.UseBlurEffect || _viewModel.AppTheme switch
+        {
+            AppTheme.Dark => true,
+            AppTheme.Light => false,
+            _ => ThemeManager.IsSystemDarkMode(),
+        };
+        var theme = dark ? Wpf.Ui.Appearance.ApplicationTheme.Dark : Wpf.Ui.Appearance.ApplicationTheme.Light;
+
+        if (theme != _fluentTheme)
+        {
+            _fluentTheme = theme;
+            Resources.MergedDictionaries[0] = new Wpf.Ui.Markup.ThemesDictionary { Theme = theme };
+            ApplyWindowDarkMode();
+        }
+
+        ApplyFluentAccent(dark);
+    }
+
+    /// <summary>
+    /// Overrides WPF UI's accent keys with Tabu's accent color. Local keys
+    /// win over the merged dictionaries, and only this window sees them.
+    /// Variants follow WPF UI's convention: lighter shades on dark, darker
+    /// shades on light.
+    /// </summary>
+    private void ApplyFluentAccent(bool dark)
+    {
+        var hex = AccentColorManager.ResolveCanonicalHex(_viewModel.AccentColor);
+        if (ColorConverter.ConvertFromString(hex) is not Color accent)
+        {
+            return;
+        }
+
+        Color target = dark ? Colors.White : Colors.Black;
+        Color primary = Blend(accent, target, dark ? 0.25 : 0.10);
+        Color secondary = Blend(accent, target, dark ? 0.40 : 0.25);
+        Color tertiary = Blend(accent, target, dark ? 0.55 : 0.40);
+        Color fill = dark ? primary : secondary;
+
+        Resources["SystemAccentColor"] = accent;
+        Resources["SystemAccentColorPrimary"] = primary;
+        Resources["SystemAccentColorSecondary"] = secondary;
+        Resources["SystemAccentColorTertiary"] = tertiary;
+        Resources["AccentFillColorDefault"] = fill;
+        Resources["AccentFillColorSecondary"] = Color.FromArgb(0xE6, fill.R, fill.G, fill.B);
+        Resources["AccentFillColorTertiary"] = Color.FromArgb(0xCC, fill.R, fill.G, fill.B);
+
+        Resources["SystemAccentColorBrush"] = new SolidColorBrush(accent);
+        Resources["SystemAccentColorPrimaryBrush"] = new SolidColorBrush(primary);
+        Resources["SystemAccentColorSecondaryBrush"] = new SolidColorBrush(secondary);
+        Resources["SystemAccentColorTertiaryBrush"] = new SolidColorBrush(tertiary);
+        Resources["AccentFillColorDefaultBrush"] = new SolidColorBrush(fill);
+        Resources["AccentFillColorSecondaryBrush"] = new SolidColorBrush(Color.FromArgb(0xE6, fill.R, fill.G, fill.B));
+        Resources["AccentFillColorTertiaryBrush"] = new SolidColorBrush(Color.FromArgb(0xCC, fill.R, fill.G, fill.B));
+        Resources["AccentTextFillColorPrimaryBrush"] = new SolidColorBrush(dark ? tertiary : secondary);
+        Resources["AccentFillColorSelectedTextBackgroundBrush"] = new SolidColorBrush(accent);
+
+        // Knob / text on the accent fill: dark on light accents, white otherwise.
+        double luminance = (0.299 * fill.R + 0.587 * fill.G + 0.114 * fill.B) / 255;
+        var onAccent = new SolidColorBrush(luminance > 0.6 ? Colors.Black : Colors.White);
+        Resources["TextOnAccentFillColorPrimaryBrush"] = onAccent;
+        Resources["ToggleSwitchKnobFillOn"] = onAccent;
+        Resources["ToggleSwitchKnobFillOnPointerOver"] = onAccent;
+        Resources["ToggleSwitchKnobFillOnPressed"] = onAccent;
+    }
+
+    private const int DwmwaUseImmersiveDarkMode = 20;
+    private const int DwmwaSystemBackdropType = 38;
+    private const int DwmsbtMainWindow = 2; // Mica
+
+    [System.Runtime.InteropServices.LibraryImport("dwmapi.dll")]
+    private static partial int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
+
+    /// <summary>
+    /// Tints the Mica backdrop and caption for this window only. WPF UI's
+    /// own helpers read a process-wide theme that is only set when its
+    /// dictionaries live in App.xaml, which Tabu deliberately avoids.
+    /// </summary>
+    private void ApplyWindowDarkMode()
+    {
+        var hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+        if (hwnd == IntPtr.Zero)
+        {
+            return;
+        }
+
+        int dark = _fluentTheme == Wpf.Ui.Appearance.ApplicationTheme.Dark ? 1 : 0;
+        _ = DwmSetWindowAttribute(hwnd, DwmwaUseImmersiveDarkMode, ref dark, sizeof(int));
+
+        // DWM only re-tints Mica when the backdrop type is (re)assigned.
+        int backdrop = DwmsbtMainWindow;
+        _ = DwmSetWindowAttribute(hwnd, DwmwaSystemBackdropType, ref backdrop, sizeof(int));
+    }
+
+    private static Color Blend(Color from, Color to, double amount) => Color.FromRgb(
+        (byte)(from.R + (to.R - from.R) * amount),
+        (byte)(from.G + (to.G - from.G) * amount),
+        (byte)(from.B + (to.B - from.B) * amount));
+
+    private void Nav_Checked(object sender, RoutedEventArgs e)
+    {
+        // Fires during InitializeComponent for the default item, before
+        // the pages further down the XAML have been created.
+        if (sender is not RadioButton { Tag: string pageName } item || PageScroller is null)
+        {
+            return;
+        }
+
+        foreach (var page in new FrameworkElement[] { BarLayoutPage, AppearancePage, TabsPage, SystemPage })
+        {
+            page.Visibility = page.Name == pageName ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        // Bind the heading to the nav item's label so it follows language changes.
+        if (item.Content is Panel { Children.Count: > 1 } content && content.Children[1] is TextBlock label)
+        {
+            PageTitle.SetBinding(TextBlock.TextProperty,
+                new System.Windows.Data.Binding(nameof(TextBlock.Text)) { Source = label });
+        }
+
+        PageScroller.ScrollToTop();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        // The Mica tint needs the HWND and must land after WPF UI applies
+        // its backdrop during load, so defer it past the Loaded handlers.
+        Dispatcher.BeginInvoke(ApplyWindowDarkMode, System.Windows.Threading.DispatcherPriority.Loaded);
+
         const int durationMs = 220;
         var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
         var duration = System.TimeSpan.FromMilliseconds(durationMs);
 
         var fade = new DoubleAnimation(0, 1, duration) { EasingFunction = ease };
-        var grow = new DoubleAnimation(0.94, 1, duration) { EasingFunction = ease };
+        var grow = new DoubleAnimation(0.97, 1, duration) { EasingFunction = ease };
 
         SettingsRoot.BeginAnimation(OpacityProperty, fade);
 

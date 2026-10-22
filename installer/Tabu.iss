@@ -2,7 +2,7 @@
 ; Builds TabuSetup.exe from the published single-file Tabu.UI.exe.
 
 #define MyAppName        "Tabu"
-#define MyAppVersion     "1.9.4"
+#define MyAppVersion     "1.10.0"
 #define MyAppPublisher   "Jahel Cuadrado"
 #define MyAppURL         "https://github.com/JahelCuadrado/Tabu"
 #define MyAppExeName     "Tabu.UI.exe"
@@ -32,8 +32,8 @@ ArchitecturesInstallIn64BitMode=x64compatible
 UninstallDisplayIcon={app}\{#MyAppExeName}
 UninstallDisplayName={#MyAppName} {#MyAppVersion}
 SetupIconFile=..\src\Tabu.UI\Assets\tabu.ico
-WizardImageFile=assets\wizard-banner.bmp
-WizardSmallImageFile=assets\wizard-small.bmp
+WizardImageFile=assets\wizard-banner.bmp,assets\wizard-banner-150.bmp,assets\wizard-banner-200.bmp
+WizardSmallImageFile=assets\wizard-small.bmp,assets\wizard-small-150.bmp,assets\wizard-small-200.bmp
 WizardImageStretch=no
 WizardImageAlphaFormat=none
 ShowLanguageDialog=auto

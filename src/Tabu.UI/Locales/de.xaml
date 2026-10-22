@@ -85,9 +85,9 @@
     <sys:String x:Key="Update_CheckFailedTitle">Update-Prüfung fehlgeschlagen</sys:String>
     <sys:String x:Key="Update_CheckFailedBody">Tabu konnte den Update-Server nicht erreichen. Bitte prüfen Sie Ihre Verbindung.</sys:String>
 
-    <sys:String x:Key="Settings_Group_BarLayout">LEISTENLAYOUT</sys:String>
-    <sys:String x:Key="Settings_Group_Appearance">DARSTELLUNG</sys:String>
-    <sys:String x:Key="Settings_Group_Tabs">TABS</sys:String>
-    <sys:String x:Key="Settings_Group_System">SYSTEM</sys:String>
+    <sys:String x:Key="Settings_Group_BarLayout">Leistenlayout</sys:String>
+    <sys:String x:Key="Settings_Group_Appearance">Darstellung</sys:String>
+    <sys:String x:Key="Settings_Group_Tabs">Tabs</sys:String>
+    <sys:String x:Key="Settings_Group_System">System</sys:String>
     <sys:String x:Key="Settings_BlurLockedHint">Diese Option ist deaktiviert, solange der Hintergrund-Blur aktiv ist.</sys:String>
 </ResourceDictionary>

@@ -103,9 +103,13 @@ public sealed class WindowDetector : IWindowDetector
     /// which is what users expect to see, and the handle itself is the one
     /// that exposes app-level resources such as the window icon.
     /// </summary>
+    /// <remarks>
+    /// Suspended apps detach the CoreWindow from the frame; in that case a
+    /// top-level CoreWindow with the frame's title is used instead.
+    /// </remarks>
     /// <returns>
     ///   The real app PID and CoreWindow HWND, or <paramref name="hostPid"/>
-    ///   plus <see cref="IntPtr.Zero"/> when no CoreWindow child is found.
+    ///   plus <see cref="IntPtr.Zero"/> when no CoreWindow is found.
     /// </returns>
     private static (int Pid, IntPtr CoreWindowHandle) ResolveUwpAppPid(IntPtr frameHwnd, int hostPid)
     {
@@ -128,6 +132,36 @@ public sealed class WindowDetector : IWindowDetector
             }
             return true;
         }, IntPtr.Zero);
+
+        if (coreHwnd == IntPtr.Zero)
+        {
+            // A suspended UWP app (e.g. Settings left in the background)
+            // detaches its CoreWindow from the frame and parks it as a
+            // top-level window with the same title. Match it by title so
+            // the frame still resolves to the real app, and to its
+            // exclusion rules, instead of a phantom ApplicationFrameHost tab.
+            var frameTitle = NativeMethods.GetWindowText(frameHwnd);
+            if (!string.IsNullOrEmpty(frameTitle))
+            {
+                NativeMethods.EnumWindows((topHwnd, _) =>
+                {
+                    if (!NativeMethods.GetClassName(topHwnd).Equals(UwpCoreWindowClass, StringComparison.Ordinal)
+                        || !NativeMethods.GetWindowText(topHwnd).Equals(frameTitle, StringComparison.Ordinal))
+                    {
+                        return true;
+                    }
+
+                    NativeMethods.GetWindowThreadProcessId(topHwnd, out int corePid);
+                    if (corePid != 0 && corePid != hostPid)
+                    {
+                        realPid = corePid;
+                        coreHwnd = topHwnd;
+                        return false;
+                    }
+                    return true;
+                }, IntPtr.Zero);
+            }
+        }
 
         return (realPid, coreHwnd);
     }
