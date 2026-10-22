@@ -1,6 +1,11 @@
 <div align="center">
 
-# 🐙 Tabu
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/tabu-logo-dark.svg">
+  <img src="assets/tabu-logo-light.svg" alt="Tabu logo" width="128" height="128">
+</picture>
+
+# Tabu
 
 **Un'elegante barra di schede fluttuante per Windows che ti permette di passare tra le finestre aperte in un attimo.**
 
@@ -12,10 +17,6 @@
 <br/>
 
 🌍 **Disponibile in:** [English](../README.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Português](README.pt.md) · [日本語](README.ja.md) · [中文](README.zh.md) · [한국어](README.ko.md) · [Русский](README.ru.md)
-
-<br/>
-
-<img src="https://img.shields.io/badge/-%F0%9F%90%99%20Tabu-1a1a2e?style=for-the-badge&labelColor=1a1a2e" alt="Tabu" height="40"/>
 
 </div>
 
@@ -171,6 +172,6 @@ Questo progetto è concesso in licenza secondo i termini della **GNU General Pub
 
 **Realizzato con ❤️ per gli utenti esperti di Windows**
 
-🐙 *Tabu — Le tue finestre, a un clic di distanza.*
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/tabu-logo-dark-small.svg"><img src="assets/tabu-logo-light-small.svg" alt="" width="20" height="20" align="absmiddle"></picture> *Tabu — Le tue finestre, a un clic di distanza.*
 
 </div>

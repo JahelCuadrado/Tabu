@@ -1,6 +1,11 @@
 <div align="center">
 
-# 🐙 Tabu
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/tabu-logo-dark.svg">
+  <img src="assets/tabu-logo-light.svg" alt="Tabu logo" width="128" height="128">
+</picture>
+
+# Tabu
 
 **Uma elegante barra de abas flutuante para Windows que permite alternar entre janelas abertas num instante.**
 
@@ -12,10 +17,6 @@
 <br/>
 
 🌍 **Disponível em:** [English](../README.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [日本語](README.ja.md) · [中文](README.zh.md) · [한국어](README.ko.md) · [Русский](README.ru.md)
-
-<br/>
-
-<img src="https://img.shields.io/badge/-%F0%9F%90%99%20Tabu-1a1a2e?style=for-the-badge&labelColor=1a1a2e" alt="Tabu" height="40"/>
 
 </div>
 
@@ -171,6 +172,6 @@ Este projeto está licenciado sob a **Licença Pública Geral GNU v3.0 (GPL-3.0)
 
 **Feito com ❤️ para utilizadores avançados de Windows**
 
-🐙 *Tabu — As suas janelas, a um clique de distância.*
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/tabu-logo-dark-small.svg"><img src="assets/tabu-logo-light-small.svg" alt="" width="20" height="20" align="absmiddle"></picture> *Tabu — As suas janelas, a um clique de distância.*
 
 </div>

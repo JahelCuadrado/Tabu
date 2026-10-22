@@ -1,6 +1,11 @@
 <div align="center">
 
-# 🐙 Tabu
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/tabu-logo-dark.svg">
+  <img src="assets/tabu-logo-light.svg" alt="Tabu logo" width="128" height="128">
+</picture>
+
+# Tabu
 
 **Une élégante barre d'onglets flottante pour Windows qui vous permet de basculer entre vos fenêtres ouvertes en un clin d'œil.**
 
@@ -12,10 +17,6 @@
 <br/>
 
 🌍 **Disponible en :** [English](../README.md) · [Español](README.es.md) · [Deutsch](README.de.md) · [Português](README.pt.md) · [Italiano](README.it.md) · [日本語](README.ja.md) · [中文](README.zh.md) · [한국어](README.ko.md) · [Русский](README.ru.md)
-
-<br/>
-
-<img src="https://img.shields.io/badge/-%F0%9F%90%99%20Tabu-1a1a2e?style=for-the-badge&labelColor=1a1a2e" alt="Tabu" height="40"/>
 
 </div>
 
@@ -171,6 +172,6 @@ Ce projet est sous **Licence publique générale GNU v3.0 (GPL-3.0)**. Vous ête
 
 **Conçu avec ❤️ pour les utilisateurs avancés de Windows**
 
-🐙 *Tabu — Vos fenêtres, à un clic.*
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/tabu-logo-dark-small.svg"><img src="assets/tabu-logo-light-small.svg" alt="" width="20" height="20" align="absmiddle"></picture> *Tabu — Vos fenêtres, à un clic.*
 
 </div>
