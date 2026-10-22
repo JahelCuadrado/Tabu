@@ -85,9 +85,9 @@
     <sys:String x:Key="Update_CheckFailedTitle">Update check failed</sys:String>
     <sys:String x:Key="Update_CheckFailedBody">Tabu could not reach the update server. Please check your connection and try again.</sys:String>
 
-    <sys:String x:Key="Settings_Group_BarLayout">BAR LAYOUT</sys:String>
-    <sys:String x:Key="Settings_Group_Appearance">APPEARANCE</sys:String>
-    <sys:String x:Key="Settings_Group_Tabs">TABS</sys:String>
-    <sys:String x:Key="Settings_Group_System">SYSTEM</sys:String>
+    <sys:String x:Key="Settings_Group_BarLayout">Bar layout</sys:String>
+    <sys:String x:Key="Settings_Group_Appearance">Appearance</sys:String>
+    <sys:String x:Key="Settings_Group_Tabs">Tabs</sys:String>
+    <sys:String x:Key="Settings_Group_System">System</sys:String>
     <sys:String x:Key="Settings_BlurLockedHint">This option is disabled while background blur is on.</sys:String>
 </ResourceDictionary>
