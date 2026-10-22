@@ -43,4 +43,88 @@
     <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}" />
     <SolidColorBrush x:Key="BorderHoverBrush" Color="{StaticResource BorderHoverColor}" />
 
+    <!-- "Tabu" wordmark next to the bar logo: the icon's purple-to-blue
+         strip, deepened so it stays readable on the bar. -->
+    <LinearGradientBrush x:Key="TabuWordmarkBrush" StartPoint="0,0.5" EndPoint="1,0.5">
+        <GradientStop Offset="0" Color="#7B4EEB" />
+        <GradientStop Offset="0.55" Color="#4B5BE0" />
+        <GradientStop Offset="1" Color="#0E86C6" />
+    </LinearGradientBrush>
+
+    <!-- Logo face gradient, absolute so eyes and smile share one sweep. -->
+    <LinearGradientBrush x:Key="TabuLogoFaceBrush" MappingMode="Absolute"
+                         StartPoint="78,130" EndPoint="178,210">
+        <GradientStop Offset="0" Color="#8B6CF8" />
+        <GradientStop Offset="1" Color="#2196E3" />
+    </LinearGradientBrush>
+
+    <!-- Tabu logo (light), vector copy of the 16-32 px icon variant so
+         the bar and settings title stay crisp at any DPI. Swapped with
+         this dictionary, so it follows the theme. -->
+    <DrawingImage x:Key="TabuLogoImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <!-- Transparent square keeps the 256x256 bounds (and aspect). -->
+                <GeometryDrawing Brush="Transparent" Geometry="M0,0 H256 V256 H0Z" />
+                <DrawingGroup>
+                    <DrawingGroup.ClipGeometry>
+                        <RectangleGeometry Rect="8,24,240,208" RadiusX="32" RadiusY="32" />
+                    </DrawingGroup.ClipGeometry>
+                    <GeometryDrawing Geometry="M8,24 H248 V232 H8Z">
+                        <GeometryDrawing.Brush>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0.6">
+                                <GradientStop Offset="0" Color="#9F7AFA" />
+                                <GradientStop Offset="0.55" Color="#5D6CF2" />
+                                <GradientStop Offset="1" Color="#16A6DE" />
+                            </LinearGradientBrush>
+                        </GeometryDrawing.Brush>
+                    </GeometryDrawing>
+                    <GeometryDrawing Geometry="M8,96 C22,96 26,90 26,78 V68 A16,16 0 0 1 42,52 H134 A16,16 0 0 1 150,68 V78 C150,90 154,96 168,96 H248 V232 H8Z">
+                        <GeometryDrawing.Brush>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0.3,1">
+                                <GradientStop Offset="0" Color="#FFFFFF" />
+                                <GradientStop Offset="1" Color="#DCE4F4" />
+                            </LinearGradientBrush>
+                        </GeometryDrawing.Brush>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#26000000" Thickness="2" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="9,25,238,206" RadiusX="31" RadiusY="31" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <!-- Face -->
+                <DrawingGroup>
+                    <DrawingGroup.Children>
+                        <GeometryDrawing Brush="{StaticResource TabuLogoFaceBrush}">
+                            <GeometryDrawing.Geometry>
+                                <GeometryGroup>
+                                    <EllipseGeometry Center="98,150" RadiusX="20" RadiusY="20" />
+                                    <EllipseGeometry Center="158,150" RadiusX="20" RadiusY="20" />
+                                </GeometryGroup>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <GeometryDrawing Brush="White">
+                            <GeometryDrawing.Geometry>
+                                <GeometryGroup>
+                                    <EllipseGeometry Center="91,142" RadiusX="7" RadiusY="7" />
+                                    <EllipseGeometry Center="151,142" RadiusX="7" RadiusY="7" />
+                                </GeometryGroup>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <GeometryDrawing Geometry="M100,190 Q128,210 156,190">
+                            <GeometryDrawing.Pen>
+                                <Pen Brush="{StaticResource TabuLogoFaceBrush}" Thickness="14"
+                                     StartLineCap="Round" EndLineCap="Round" />
+                            </GeometryDrawing.Pen>
+                        </GeometryDrawing>
+                    </DrawingGroup.Children>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
 </ResourceDictionary>
