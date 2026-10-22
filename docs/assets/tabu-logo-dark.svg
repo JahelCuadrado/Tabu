@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="strip" x1="0" y1="0" x2="1" y2="0.6">
+      <stop offset="0" stop-color="#9F7AFA"/>
+      <stop offset="0.55" stop-color="#5D6CF2"/>
+      <stop offset="1" stop-color="#16A6DE"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#2E3142"/>
+      <stop offset="1" stop-color="#191B26"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8B6CF8"/>
+      <stop offset="1" stop-color="#2196E3"/>
+    </linearGradient>
+    <clipPath id="win"><rect x="24" y="44" width="208" height="172" rx="22"/></clipPath>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter>
+    <filter id="tabshadow" x="-20%" y="-40%" width="140%" height="180%"><feDropShadow dx="0" dy="-1" stdDeviation="2.5" flood-color="#1E1B4B" flood-opacity="0.25"/></filter>
+  </defs>
+  <rect x="34" y="62" width="188" height="164" rx="22" fill="#000" opacity="0.28" filter="url(#soft)"/>
+  <g clip-path="url(#win)">
+    <rect x="24" y="44" width="208" height="172" fill="url(#body)"/>
+    <rect x="24" y="44" width="208" height="56" fill="url(#strip)"/>
+    <rect x="24" y="44" width="208" height="28" fill="#fff" opacity="0.12"/>
+    <path d="M150 100 V78 a10 10 0 0 1 10 -10 H186 a10 10 0 0 1 10 10 V100Z" fill="#fff" opacity="0.30"/>
+    <path d="M42 100 c8 0 10 -4 10 -12 V76 a12 12 0 0 1 12 -12 H128 a12 12 0 0 1 12 12 V88 c0 8 2 12 10 12Z" fill="url(#body)" filter="url(#tabshadow)"/>
+    <rect x="24" y="100" width="208" height="116" fill="url(#body)"/>
+  </g>
+  <rect x="24.75" y="44.75" width="206.5" height="170.5" rx="21.25" fill="none" stroke="#FFFFFF1F" stroke-width="1.5"/>
+  <g>
+    <circle cx="108" cy="150" r="13" fill="url(#face)"/>
+    <circle cx="148" cy="150" r="13" fill="url(#face)"/>
+    <circle cx="104" cy="145" r="4.5" fill="#fff"/>
+    <circle cx="144" cy="145" r="4.5" fill="#fff"/>
+    <path d="M113 176 Q128 188 143 176" fill="none" stroke="url(#face)" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</svg>

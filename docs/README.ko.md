@@ -1,6 +1,11 @@
 <div align="center">
 
-# 🐙 Tabu
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/tabu-logo-dark.svg">
+  <img src="assets/tabu-logo-light.svg" alt="Tabu logo" width="128" height="128">
+</picture>
+
+# Tabu
 
 **열려 있는 창 사이를 순식간에 전환할 수 있는, Windows용 세련된 플로팅 탭 바.**
 
@@ -12,10 +17,6 @@
 <br/>
 
 🌍 **지원 언어:** [English](../README.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Português](README.pt.md) · [Italiano](README.it.md) · [日本語](README.ja.md) · [中文](README.zh.md) · [Русский](README.ru.md)
-
-<br/>
-
-<img src="https://img.shields.io/badge/-%F0%9F%90%99%20Tabu-1a1a2e?style=for-the-badge&labelColor=1a1a2e" alt="Tabu" height="40"/>
 
 </div>
 
@@ -171,6 +172,6 @@ Tabu.sln
 
 **Windows 파워 유저를 위해 ❤️ 로 제작되었습니다**
 
-🐙 *Tabu — 당신의 창, 한 번의 클릭으로.*
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/tabu-logo-dark-small.svg"><img src="assets/tabu-logo-light-small.svg" alt="" width="20" height="20" align="absmiddle"></picture> *Tabu — 당신의 창, 한 번의 클릭으로.*
 
 </div>

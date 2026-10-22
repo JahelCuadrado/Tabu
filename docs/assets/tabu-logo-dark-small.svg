@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="strip" x1="0" y1="0" x2="1" y2="0.6">
+      <stop offset="0" stop-color="#9F7AFA"/>
+      <stop offset="0.55" stop-color="#5D6CF2"/>
+      <stop offset="1" stop-color="#16A6DE"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#2E3142"/>
+      <stop offset="1" stop-color="#191B26"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8B6CF8"/>
+      <stop offset="1" stop-color="#2196E3"/>
+    </linearGradient>
+    <clipPath id="win"><rect x="8" y="24" width="240" height="208" rx="32"/></clipPath>
+  </defs>
+  <g clip-path="url(#win)">
+    <rect x="8" y="24" width="240" height="208" fill="url(#strip)"/>
+    <path d="M8 96 c14 0 18 -6 18 -18 V68 a16 16 0 0 1 16 -16 H134 a16 16 0 0 1 16 16 V78 c0 12 4 18 18 18Z" fill="url(#body)"/>
+    <rect x="8" y="96" width="240" height="136" fill="url(#body)"/>
+  </g>
+  <rect x="9" y="25" width="238" height="206" rx="31" fill="none" stroke="#FFFFFF2E" stroke-width="2"/>
+  <circle cx="98" cy="150" r="20" fill="url(#face)"/>
+  <circle cx="158" cy="150" r="20" fill="url(#face)"/>
+  <circle cx="91" cy="142" r="7" fill="#fff"/>
+  <circle cx="151" cy="142" r="7" fill="#fff"/>
+  <path d="M100 190 Q128 210 156 190" fill="none" stroke="url(#face)" stroke-width="14" stroke-linecap="round"/>
+</svg>
