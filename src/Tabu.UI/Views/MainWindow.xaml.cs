@@ -271,6 +271,11 @@ public partial class MainWindow : Window
         }
 
         SHAppBarMessage(ABM_QUERYPOS, ref abd);
+        // QUERYPOS may push the top edge down when another appbar already
+        // reserves that edge, leaving Bottom stale (Bottom < Top). Re-derive
+        // it from the adjusted Top, as documented for SHAppBarMessage, so
+        // the reservation and the window height never go negative.
+        abd.rc.Bottom = abd.rc.Top + BarHeightPixels;
         SHAppBarMessage(ABM_SETPOS, ref abd);
 
         // MoveWindow first: moves the HWND to the target monitor, which
