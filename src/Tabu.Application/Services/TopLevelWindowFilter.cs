@@ -68,6 +68,21 @@ public static class TopLevelWindowFilter
     }
 
     /// <summary>
+    /// Returns <c>true</c> for a UWP frame whose app is suspended in the
+    /// background (e.g. Windows Settings after the user closed it): the
+    /// frame is cloaked, not minimized, and its CoreWindow has been
+    /// detached. Such a frame must not get a tab.
+    /// </summary>
+    /// <remarks>
+    /// A detached CoreWindow alone is not enough: minimizing a UWP app also
+    /// detaches it, and minimized apps keep their tab. A cloaked frame with
+    /// its CoreWindow attached is a running app (see
+    /// <see cref="IsCandidateAppWindow"/>).
+    /// </remarks>
+    public static bool IsSuspendedUwpFrame(bool isCloaked, bool isIconic, bool hasAttachedCoreWindow) =>
+        isCloaked && !isIconic && !hasAttachedCoreWindow;
+
+    /// <summary>
     /// Whether the supplied class name identifies the system-owned
     /// UWP / WinUI frame host. Public so the infrastructure layer can
     /// reuse the same comparison without duplicating the constant.

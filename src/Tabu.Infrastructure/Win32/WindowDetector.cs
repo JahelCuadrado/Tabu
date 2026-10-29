@@ -15,7 +15,6 @@ public sealed class WindowDetector : IWindowDetector
         "SearchHost",
         "StartMenuExperienceHost",
         "LockApp",
-        "SystemSettings",
         "ScreenClippingHost",
         "WindowsInternal.ComposableShell.Experiences.TextInput.InputApp",
         "CompactOverlay",
@@ -66,7 +65,16 @@ public sealed class WindowDetector : IWindowDetector
             // instead of "ApplicationFrameHost" and tab grouping works.
             if (metadata.Name.Equals(UwpHostProcessName, StringComparison.OrdinalIgnoreCase))
             {
-                var (realPid, coreHwnd) = ResolveUwpAppPid(hWnd, pid);
+                var (realPid, coreHwnd, coreAttached) = ResolveUwpAppPid(hWnd, pid);
+
+                // Suspended background app (e.g. Windows Settings after the
+                // user closed it): no tab, or it would linger as a phantom.
+                if (TopLevelWindowFilter.IsSuspendedUwpFrame(
+                        NativeMethods.IsCloaked(hWnd), NativeMethods.IsIconic(hWnd), coreAttached))
+                {
+                    return true;
+                }
+
                 if (realPid != pid)
                 {
                     pid = realPid;
@@ -109,9 +117,10 @@ public sealed class WindowDetector : IWindowDetector
     /// </remarks>
     /// <returns>
     ///   The real app PID and CoreWindow HWND, or <paramref name="hostPid"/>
-    ///   plus <see cref="IntPtr.Zero"/> when no CoreWindow is found.
+    ///   plus <see cref="IntPtr.Zero"/> when no CoreWindow is found, and
+    ///   whether the CoreWindow is still attached to the frame.
     /// </returns>
-    private static (int Pid, IntPtr CoreWindowHandle) ResolveUwpAppPid(IntPtr frameHwnd, int hostPid)
+    private static (int Pid, IntPtr CoreWindowHandle, bool IsAttached) ResolveUwpAppPid(IntPtr frameHwnd, int hostPid)
     {
         int realPid = hostPid;
         IntPtr coreHwnd = IntPtr.Zero;
@@ -133,7 +142,8 @@ public sealed class WindowDetector : IWindowDetector
             return true;
         }, IntPtr.Zero);
 
-        if (coreHwnd == IntPtr.Zero)
+        bool isAttached = coreHwnd != IntPtr.Zero;
+        if (!isAttached)
         {
             // A suspended UWP app (e.g. Settings left in the background)
             // detaches its CoreWindow from the frame and parks it as a
@@ -163,7 +173,7 @@ public sealed class WindowDetector : IWindowDetector
             }
         }
 
-        return (realPid, coreHwnd);
+        return (realPid, coreHwnd, isAttached);
     }
 
     private ProcessMetadata ResolveMetadata(int pid)
