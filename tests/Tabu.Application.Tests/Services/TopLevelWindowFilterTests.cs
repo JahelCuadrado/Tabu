@@ -92,6 +92,47 @@ public sealed class TopLevelWindowFilterTests
         TopLevelWindowFilter.IsCandidateAppWindow(snap).Should().BeTrue();
     }
 
+    [Fact]
+    public void IsSuspendedUwpFrame_SuspendedBackgroundApp()
+    {
+        // Windows Settings left in the background: frame cloaked, not
+        // minimized, CoreWindow detached from the frame. Must not get a tab.
+        TopLevelWindowFilter.IsSuspendedUwpFrame(
+            isCloaked: true, isIconic: false, hasAttachedCoreWindow: false)
+            .Should().BeTrue();
+    }
+
+    [Fact]
+    public void IsSuspendedUwpFrame_MinimizedApp_KeepsTab()
+    {
+        // A minimized UWP app also detaches its CoreWindow, but the user
+        // still expects its tab.
+        TopLevelWindowFilter.IsSuspendedUwpFrame(
+            isCloaked: false, isIconic: true, hasAttachedCoreWindow: false)
+            .Should().BeFalse();
+        TopLevelWindowFilter.IsSuspendedUwpFrame(
+            isCloaked: true, isIconic: true, hasAttachedCoreWindow: false)
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsSuspendedUwpFrame_CloakedButAttached_RegressionGuard_v1_4_0()
+    {
+        // 24H2 cloaks running UWP frames under normal conditions; with the
+        // CoreWindow still attached the app is alive and keeps its tab.
+        TopLevelWindowFilter.IsSuspendedUwpFrame(
+            isCloaked: true, isIconic: false, hasAttachedCoreWindow: true)
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsSuspendedUwpFrame_OpenApp_KeepsTab()
+    {
+        TopLevelWindowFilter.IsSuspendedUwpFrame(
+            isCloaked: false, isIconic: false, hasAttachedCoreWindow: true)
+            .Should().BeFalse();
+    }
+
     [Theory]
     [InlineData("ApplicationFrameWindow", true)]
     [InlineData("applicationframewindow", false)]

@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Tabu.Application;
@@ -144,6 +145,7 @@ public partial class App : System.Windows.Application
         }
 
         _primaryBar = new MainWindow(_primaryViewModel);
+        _primaryBar.DisplayTopologyChanged += OnDisplayTopologyChanged;
         _primaryBar.Show();
 
         // Subscribe to shell-level taskbar flash events so we can render
@@ -373,6 +375,53 @@ public partial class App : System.Windows.Application
         _barManager.ApplyDetectionMode(sameScreenOnly, _primaryViewModel);
     }
 
+    /// <summary>
+    /// Windows sends a burst of WM_DISPLAYCHANGE while a monitor is
+    /// (un)plugged; wait for it to settle before rebuilding the bars.
+    /// </summary>
+    private static readonly TimeSpan DisplayChangeSettleDelay = TimeSpan.FromMilliseconds(750);
+
+    private DispatcherTimer? _displayChangeTimer;
+
+    private void OnDisplayTopologyChanged(object? sender, EventArgs e)
+    {
+        if (_displayChangeTimer is null)
+        {
+            _displayChangeTimer = new DispatcherTimer { Interval = DisplayChangeSettleDelay };
+            _displayChangeTimer.Tick += (_, _) =>
+            {
+                _displayChangeTimer.Stop();
+                ReconcileBarsWithDisplays();
+            };
+        }
+
+        // Restart on every message so only the last one in the burst counts.
+        _displayChangeTimer.Stop();
+        _displayChangeTimer.Start();
+    }
+
+    /// <summary>
+    /// Re-anchors the primary bar on the primary monitor and, in
+    /// all-monitors mode, rebuilds one secondary bar per current
+    /// non-primary monitor. Without this, unplugging a monitor leaves its
+    /// bar stacked on a surviving one and a newly attached monitor gets none.
+    /// </summary>
+    private void ReconcileBarsWithDisplays()
+    {
+        if (_primaryViewModel is null) return;
+
+        _primaryBar?.ReanchorToPrimaryMonitor();
+
+        if (!_primaryViewModel.IsBarOnAllMonitors) return;
+
+        DeactivateSecondaryBars();
+        ActivateAllMonitorBars();
+        if (_primaryViewModel.IsDetectSameScreenOnly)
+        {
+            ApplyDetectionMode(true);
+        }
+    }
+
     private void ActivateAllMonitorBars()
     {
         if (_primaryViewModel is null || _barManager is null) return;
@@ -400,6 +449,11 @@ public partial class App : System.Windows.Application
     {
         PersistSettings();
         UnsubscribePrimaryViewModel();
+        _displayChangeTimer?.Stop();
+        if (_primaryBar is not null)
+        {
+            _primaryBar.DisplayTopologyChanged -= OnDisplayTopologyChanged;
+        }
         DeactivateSecondaryBars();
         if (_shellHook is not null)
         {

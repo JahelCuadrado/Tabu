@@ -64,6 +64,15 @@ public partial class MainWindow : Window
     public ScreenInfo? TargetScreen { get; set; }
     public bool IsPrimary { get; set; } = true;
 
+    /// <summary>
+    /// Raised by the primary bar when Windows reports a display topology
+    /// change (monitor plugged/unplugged, dock/undock, lid close). The host
+    /// uses it to rebuild the per-monitor bars, which cannot be fixed by
+    /// each bar on its own: a bar whose monitor vanished is moved by
+    /// Windows onto a surviving monitor and would otherwise stay there.
+    /// </summary>
+    public event EventHandler? DisplayTopologyChanged;
+
     public MainWindow(MainViewModel viewModel)
     {
         InitializeComponent();
@@ -271,6 +280,11 @@ public partial class MainWindow : Window
         }
 
         SHAppBarMessage(ABM_QUERYPOS, ref abd);
+        // QUERYPOS may push the top edge down when another appbar already
+        // reserves that edge, leaving Bottom stale (Bottom < Top). Re-derive
+        // it from the adjusted Top, as documented for SHAppBarMessage, so
+        // the reservation and the window height never go negative.
+        abd.rc.Bottom = abd.rc.Top + BarHeightPixels;
         SHAppBarMessage(ABM_SETPOS, ref abd);
 
         // MoveWindow first: moves the HWND to the target monitor, which
@@ -383,6 +397,10 @@ public partial class MainWindow : Window
                 // AppBar rect to reference defunct coordinates.
                 RefreshTargetScreen();
                 Dispatcher.BeginInvoke(new Action(SetAppBarPosition), DispatcherPriority.Background);
+                if (IsPrimary)
+                {
+                    DisplayTopologyChanged?.Invoke(this, EventArgs.Empty);
+                }
                 break;
             case WM_DPICHANGED:
             case WM_SETTINGCHANGE:
@@ -404,6 +422,20 @@ public partial class MainWindow : Window
     /// <see cref="MainViewModel.MonitorFilter"/> (used by
     /// <see cref="MainViewModel"/> to partition tabs per monitor).
     /// </summary>
+    /// <summary>
+    /// Moves the primary bar back onto the primary monitor and re-issues its
+    /// AppBar reservation. After a topology change Windows may have parked
+    /// it on another display (e.g. the laptop panel that was primary is gone).
+    /// The primary monitor is, by definition, the one containing (0,0).
+    /// </summary>
+    public void ReanchorToPrimaryMonitor()
+    {
+        if (!IsPrimary || _hwnd == IntPtr.Zero) return;
+
+        MoveWindow(_hwnd, 0, 0, 1, 1, false);
+        SetAppBarPosition();
+    }
+
     private void RefreshTargetScreen()
     {
         if (_hwnd == IntPtr.Zero) return;
